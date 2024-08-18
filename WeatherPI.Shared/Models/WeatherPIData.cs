@@ -19,23 +19,18 @@ namespace WeatherPI.Shared.Models
         public string? Name { get; set; }
 
         [DataMember]
-        [DisplayFormat(DataFormatString = "{0:F2}")]
         public decimal? Latitude { get; set; }
 
         [DataMember]
-        [DisplayFormat(DataFormatString = "{0:F2}")]
         public decimal? Longitude { get; set; }
 
         [DataMember]
-        [DisplayFormat(DataFormatString = "{0:F2}")]
         public decimal? Temperature { get; set; }
 
         [DataMember]
-        [DisplayFormat(DataFormatString = "{0:F2}")]
         public decimal? RelativeHumidity { get; set; }
 
         [DataMember]
-        [DisplayFormat(DataFormatString = "{0:F2}")]
         public decimal? BarometricPressure { get; set; }
 
         [DataMember]

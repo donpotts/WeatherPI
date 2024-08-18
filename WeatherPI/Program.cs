@@ -162,11 +162,14 @@ builder.Services.AddScoped<ImageService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//}
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseForwardedHeaders();
@@ -249,7 +252,20 @@ using (var scope = app.Services.CreateScope())
         };
 
         await userManager.CreateAsync(normalUser, "testUser123!");
-        
+
+        ApplicationUser testUser = new()
+        {
+            Email = "testuser@example.com",
+            UserName = "testuser@example.com",
+            FirstName = "Normal",
+            LastName = "User",
+            Title = "N/A",
+            CompanyName = "Testing Company",
+            Photo = photo,
+        };
+
+        await userManager.CreateAsync(normalUser, "testUser123!");
+
 
         if (File.Exists("WeatherPIData.Data.json"))
         {
