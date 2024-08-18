@@ -1,0 +1,12 @@
+[
+  {
+    "StationId": 1,
+    "Name": "RPDev",
+    "Latitude": 35.75,
+    "Longitude": 86.53,
+    "Temperature": 85.25,
+    "RelativeHumidity": 39.01,
+    "BarometricPressure": 30.18,
+    "DateTime": "2023-06-19T15:00:00"
+  }
+]
