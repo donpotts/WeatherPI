@@ -6,7 +6,7 @@ IoT Weather Application using a Raspberry PI 3b
 
 ## Overview
 
-This repository contains an ASP.NET Core application with a Blazor WebAssembly (WASM) and MAUI UI application in .NET 8. It also includes user authentication using ASP.NET Core 8 Identity, uses Entity Framework Core SQLite as the database, and supports OData for efficient querying.
+This repository contains an ASP.NET Core application with a Blazor WebAssembly (WASM) application in .NET 8. It also includes user authentication using ASP.NET Core 8 Identity, uses Entity Framework Core SQLite as the database, and supports OData for efficient querying.
 
 ## Features
 
