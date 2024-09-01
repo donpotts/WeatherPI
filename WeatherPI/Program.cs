@@ -264,7 +264,7 @@ using (var scope = app.Services.CreateScope())
             Photo = photo,
         };
 
-        await userManager.CreateAsync(normalUser, "testUser123!");
+        await userManager.CreateAsync(testUser, "testUser123!");
 
 
         if (File.Exists("WeatherPIData.Data.json"))
