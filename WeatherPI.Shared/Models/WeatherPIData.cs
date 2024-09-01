@@ -8,6 +8,12 @@ namespace WeatherPI.Shared.Models
     [DataContract]
     public class WeatherPIData
     {
+        private decimal? _latitude;
+        private decimal? _longitude;
+        private decimal? _temperature;
+        private decimal? _relativeHumidity;
+        private decimal? _barometricPressure;
+
         [Key]
         [DataMember]
         public long? Id { get; set; }
@@ -19,24 +25,39 @@ namespace WeatherPI.Shared.Models
         public string? Name { get; set; }
 
         [DataMember]
-        [DisplayFormat(DataFormatString = "{0:F2}")]
-        public decimal? Latitude { get; set; }
+        public decimal? Latitude
+        {
+            get => _latitude;
+            set => _latitude = value.HasValue ? Math.Round(value.Value, 2) : (decimal?)null;
+        }
 
         [DataMember]
-        [DisplayFormat(DataFormatString = "{0:F2}")]
-        public decimal? Longitude { get; set; }
+        public decimal? Longitude
+        {
+            get => _longitude;
+            set => _longitude = value.HasValue ? Math.Round(value.Value, 2) : (decimal?)null;
+        }
 
         [DataMember]
-        [DisplayFormat(DataFormatString = "{0:F2}")]
-        public decimal? Temperature { get; set; }
+        public decimal? Temperature
+        {
+            get => _temperature;
+            set => _temperature = value.HasValue ? Math.Round(value.Value, 2) : (decimal?)null;
+        }
 
         [DataMember]
-        [DisplayFormat(DataFormatString = "{0:F2}")]
-        public decimal? RelativeHumidity { get; set; }
+        public decimal? RelativeHumidity
+        {
+            get => _relativeHumidity;
+            set => _relativeHumidity = value.HasValue ? Math.Round(value.Value, 2) : (decimal?)null;
+        }
 
         [DataMember]
-        [DisplayFormat(DataFormatString = "{0:F2}")]
-        public decimal? BarometricPressure { get; set; }
+        public decimal? BarometricPressure
+        {
+            get => _barometricPressure;
+            set => _barometricPressure = value.HasValue ? Math.Round(value.Value, 2) : (decimal?)null;
+        }
 
         [DataMember]
         public DateTime? DateTime { get; set; }
