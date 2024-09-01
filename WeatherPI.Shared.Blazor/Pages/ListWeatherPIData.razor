@@ -110,8 +110,7 @@
                 
                 if (isDecimal)
                 {
-                    string formattedSearchString = decimal.Parse(_searchString).ToString("F2");
-                    filter = $"Id eq cast({formattedSearchString},Edm.Decimal) or StationId eq cast({formattedSearchString},Edm.Decimal) or Latitude eq cast({formattedSearchString},Edm.Decimal) or Longitude eq cast({formattedSearchString},Edm.Decimal) or Temperature eq cast({formattedSearchString},Edm.Decimal) or RelativeHumidity eq cast({formattedSearchString},Edm.Decimal) or BarometricPressure eq cast({formattedSearchString},Edm.Decimal)";
+                    filter = $"Id eq {_searchString} or StationId eq {_searchString} or Latitude eq cast({_searchString},Edm.Decimal) or Longitude eq cast({_searchString},Edm.Decimal) or Temperature eq cast({_searchString},Edm.Decimal) or RelativeHumidity eq cast({_searchString},Edm.Decimal) or BarometricPressure eq cast({_searchString},Edm.Decimal)";
                 }
                 else if (isDateTime)
                 {
