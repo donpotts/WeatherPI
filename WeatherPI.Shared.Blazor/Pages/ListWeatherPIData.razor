@@ -27,7 +27,7 @@
         <PropertyColumn Property="x => x!.StationId" Title="StationId" />
         <PropertyColumn Property="x => x!.Name" Title="Name" />
         @* <PropertyColumn Property="x => x!.Latitude" Title="Latitude" /> *@
-        <TemplateColumn Title="Latitude" Sortable="true">
+        <TemplateColumn Title="Latitude" Sortable="true" SortBy="@(x => $"{x.Latitude}")">
             <CellTemplate Context="context">
                 @if (@context.Item.Latitude != null)
                 {
@@ -36,7 +36,7 @@
             </CellTemplate>
         </TemplateColumn>
         @* <PropertyColumn Property="x => x!.Longitude" Title="Longitude" /> *@
-        <TemplateColumn Title="Longitude" Sortable="true">
+        <TemplateColumn Title="Longitude" Sortable="true" SortBy="@(x => $"{x.Longitude}")">
             <CellTemplate Context="context">
                 @if (@context.Item.Longitude != null)
                 {
@@ -45,7 +45,7 @@
             </CellTemplate>
         </TemplateColumn>
         @* <PropertyColumn Property="x => x!.Temperature" Title="Temperature" /> *@
-        <TemplateColumn Title="Temperature" Sortable="true">
+        <TemplateColumn Title="Temperature" Sortable="true" SortBy="@(x => $"{x.Temperature}")">
             <CellTemplate Context="context">
                 @if (@context.Item.Temperature != null)
                 {
@@ -54,7 +54,7 @@
             </CellTemplate>
         </TemplateColumn>
         @* <PropertyColumn Property="x => x!.RelativeHumidity" Title="Relative Humidity" />*@
-        <TemplateColumn Title="Relative Humidity" Sortable="true">
+        <TemplateColumn Title="Relative Humidity" Sortable="true" SortBy="@(_ => nameof(WeatherPIData.RelativeHumidity))">
             <CellTemplate Context="context">
                 @if (@context.Item.RelativeHumidity != null)
                 {
@@ -63,7 +63,7 @@
             </CellTemplate>
         </TemplateColumn>
         @*<PropertyColumn Property="x => x!.BarometricPressure" Title="Barometric Pressure" /> *@
-        <TemplateColumn Title="Relative Humidity" Sortable="true">
+        <TemplateColumn Title="Barometric Pressure" Sortable="true" SortBy="@(x => $"{x.BarometricPressure}")">
             <CellTemplate Context="context">
                 @if (@context.Item.BarometricPressure != null)
                 {
@@ -141,12 +141,46 @@
         return absolute.ToString();
     }
 
+    private string? GetTitleName(GridState<WeatherPIData> state)
+    {
+        string? titleName = null;
+        var sort = state.SortDefinitions.First();
+        if (sort != null)
+        {
+            var sortedColumn = grid?.RenderedColumns.Find(x => x.PropertyName == sort.SortBy);
+            titleName = sortedColumn?.Title.Replace(" ", "");
+        }
+        return titleName;
+    }
+
     private async Task<GridData<WeatherPIData>> ServerReload(GridState<WeatherPIData> state)
     {
         var top = state.PageSize;
         var skip = state.Page * state.PageSize;
         var orderby = ODataHelpers.GetOrderBy(state.SortDefinitions);
         var filter = ODataHelpers.GetFilter(state.FilterDefinitions);
+
+        if (orderby != null)
+        {
+            var isGuid = Guid.TryParse(orderby.Replace("desc", "").Replace("asc", ""), out _);
+            if (isGuid)
+            {
+                var sortBy = isGuid ? GetTitleName(state) : orderby;
+                if (sortBy != null)
+                {
+                    if (orderby.Contains("desc"))
+                    {
+                        orderby = $"{sortBy} asc";
+                    }
+                    else
+                    {
+                        orderby = $"{sortBy} desc";
+                    }
+                }
+            }
+        }
+        else
+            orderby = $"DateTime desc";
 
         AppService.ODataResult<WeatherPIData>? result = null;
 
