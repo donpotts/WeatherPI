@@ -115,7 +115,7 @@
                 }
                 else if (isDateTime)
                 {
-                    filter = $"DateTime ge cast({_searchString},Edm.DateTimeOffset)";
+                    filter = $"DateTime ge {_searchString}T00:00:00Z and DateTime le {_searchString}T23:59:59Z";
                 }
                 else
                 {
@@ -189,10 +189,10 @@
         _searchString = Value.ToString().ToLower();
         try
         {
-            if (_searchString.Length > 18)
+            if (_searchString.Length > 7)
             {
                 DateTimeOffset dateTime = DateTime.Parse(_searchString);
-                _searchString = dateTime.ToString("yyyy-MM-ddTHH:mm:ssK");
+                _searchString = dateTime.ToString("yyyy-MM-dd");
                 //Console.WriteLine(_searchString);
             }
         }
