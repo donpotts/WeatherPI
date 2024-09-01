@@ -105,22 +105,24 @@
         {
             if (_searchString?.Length > 0)
             {
-               bool isNumeric = double.TryParse(_searchString, out _);
-               bool isDateTime = DateTime.TryParse(_searchString, out _);
-
-               if (isNumeric)
-               {
-                   filter = $"Id eq {_searchString} or StationId eq {_searchString} or Latitude eq {_searchString} or Longitude eq {_searchString} or Temperature eq {_searchString} or RelativeHumidity eq {_searchString} or BarometricPressure eq {_searchString}";
-               }
-               else if (isDateTime)
-               {
-                   filter = $"DateTime ge cast({_searchString},Edm.DateTimeOffset)";
-               }
-               else
-               {
-                   filter = $"contains(tolower(Name), '{_searchString}') ";
-               }
+                bool isDecimal = decimal.TryParse(_searchString, out _);
+                bool isDateTime = DateTime.TryParse(_searchString, out _);
+                
+                if (isDecimal)
+                {
+                    string formattedSearchString = decimal.Parse(_searchString).ToString("F2");
+                    filter = $"Id eq cast({formattedSearchString},Edm.Decimal) or StationId eq cast({formattedSearchString},Edm.Decimal) or Latitude eq cast({formattedSearchString},Edm.Decimal) or Longitude eq cast({formattedSearchString},Edm.Decimal) or Temperature eq cast({formattedSearchString},Edm.Decimal) or RelativeHumidity eq cast({formattedSearchString},Edm.Decimal) or BarometricPressure eq cast({formattedSearchString},Edm.Decimal)";
+                }
+                else if (isDateTime)
+                {
+                    filter = $"DateTime ge cast({_searchString},Edm.DateTimeOffset)";
+                }
+                else
+                {
+                    filter = $"contains(tolower(Name), '{_searchString}')";
+                }
             }
+
             result = await AppService.ListWeatherPIDataODataAsync(top, skip, orderby, filter, true, null);
         }
         catch (Exception ex)
