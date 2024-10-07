@@ -25,41 +25,24 @@ namespace WeatherPI.Shared.Models
         public string? Name { get; set; }
 
         [DataMember]
-        public decimal? Latitude
-        {
-            get => _latitude;
-            set => _latitude = value.HasValue ? Math.Round(value.Value, 2) : (decimal?)null;
-        }
+        public decimal? Latitude { get; set; }
 
         [DataMember]
-        public decimal? Longitude
-        {
-            get => _longitude;
-            set => _longitude = value.HasValue ? Math.Round(value.Value, 2) : (decimal?)null;
-        }
+        public decimal? Longitude { get; set; }
 
         [DataMember]
-        public decimal? Temperature
-        {
-            get => _temperature;
-            set => _temperature = value.HasValue ? Math.Round(value.Value, 2) : (decimal?)null;
-        }
+        public decimal? Temperature { get; set; }
 
         [DataMember]
-        public decimal? RelativeHumidity
-        {
-            get => _relativeHumidity;
-            set => _relativeHumidity = value.HasValue ? Math.Round(value.Value, 2) : (decimal?)null;
-        }
+        public decimal? RelativeHumidity { get; set; }
 
         [DataMember]
-        public decimal? BarometricPressure
-        {
-            get => _barometricPressure;
-            set => _barometricPressure = value.HasValue ? Math.Round(value.Value, 2) : (decimal?)null;
-        }
+        public decimal? BarometricPressure { get; set; }
 
         [DataMember]
         public DateTime? DateTime { get; set; }
+
+        [DataMember]
+        public string? Notes { get; set; }
     }
 }

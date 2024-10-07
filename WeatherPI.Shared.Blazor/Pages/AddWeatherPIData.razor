@@ -11,13 +11,13 @@
         <DialogContent>
             <MudNumericField @bind-Value="record.StationId" For="@(() => record.StationId)" Label="StationId" />
             <MudTextField @bind-Value="record.Name" For="@(() => record.Name)" Label="Name" />
-            <MudNumericField @bind-Value="record.Latitude" For="@(() => record.Latitude)" Label="Latitude" />
-            <MudNumericField @bind-Value="record.Longitude" For="@(() => record.Longitude)" Label="Longitude" />
+            @* <MudNumericField @bind-Value="record.Latitude" For="@(() => record.Latitude)" Label="Latitude" />
+            <MudNumericField @bind-Value="record.Longitude" For="@(() => record.Longitude)" Label="Longitude" /> *@
             <MudNumericField @bind-Value="record.Temperature" For="@(() => record.Temperature)" Label="Temperature" />
             <MudNumericField @bind-Value="record.RelativeHumidity" For="@(() => record.RelativeHumidity)" Label="RelativeHumidity" />
             <MudNumericField @bind-Value="record.BarometricPressure" For="@(() => record.BarometricPressure)" Label="BarometricPressure" />
             <MudTextField Format="s" InputType="InputType.DateTimeLocal" @bind-Value="record.DateTime" For="@(() => record.DateTime)" Label="DateTime" />
-
+            <MudTextField @bind-Value="record.Notes" For="@(() => record.Notes)" Label="Notes" />
         </DialogContent>
         <DialogActions>
             <MudButton OnClick="OnCancel">Cancel</MudButton>

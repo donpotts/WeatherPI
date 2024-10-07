@@ -26,12 +26,13 @@
         @* <PropertyColumn Property="x => x!.Id" Title="Id" /> *@
         <PropertyColumn Property="x => x!.StationId" Title="StationId" />
         <PropertyColumn Property="x => x!.Name" Title="Name" />
-        <PropertyColumn Property="x => x!.Latitude" Title="Latitude" Format="F2"/>
-        <PropertyColumn Property="x => x!.Longitude" Title="Longitude" Format="F2"/>
+        @* <PropertyColumn Property="x => x!.Latitude" Title="Latitude" Format="F2"/>
+        <PropertyColumn Property="x => x!.Longitude" Title="Longitude" Format="F2"/> *@
         <PropertyColumn Property="x => x!.Temperature" Title="Temperature" Format="F2"/>
         <PropertyColumn Property="x => x!.RelativeHumidity" Title="Relative Humidity" Format="F2"/>
         <PropertyColumn Property="x => x!.BarometricPressure" Title="Barometric Pressure" Format="F2"/>
         <PropertyColumn Property="x => x!.DateTime" Title="Date Time" />
+        <PropertyColumn Property="x => x!.Notes" Title="Notes" />
         <TemplateColumn Style="width: 50px;" StickyRight="true" Sortable="false" Filterable="false">
             <CellTemplate>
                 <MudStack Row="true">
