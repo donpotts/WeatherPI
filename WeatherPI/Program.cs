@@ -140,14 +140,12 @@ builder.Services.AddRateLimiter(options =>
                 ((int) retryAfter.TotalSeconds).ToString(NumberFormatInfo.InvariantInfo);
 
             await context.HttpContext.Response.WriteAsync(
-                $"Too many requests. Please try again after {retryAfter.TotalMinutes} minute(s). " +
-                $"Read more about our rate limits at https://www.radendpoint.com/faq/.", cancellationToken: token);
+                $"Too many requests. Please try again after {retryAfter.TotalMinutes} minute(s). ", cancellationToken: token);
         }
         else
         {
             await context.HttpContext.Response.WriteAsync(
-                "Too many requests. Please try again later. " +
-                "Read more about our rate limits at https://www.radendpoint.com/faq/.", cancellationToken: token);
+                "Too many requests. Please try again later. ", cancellationToken: token);
         }
     };
 });

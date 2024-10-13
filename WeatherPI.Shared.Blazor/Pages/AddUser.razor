@@ -19,7 +19,7 @@
             <MudTextField @bind-Value="registerModel.CompanyName" For="@(() => registerModel.CompanyName)" Label="Company Name" />
             <MudFileUpload T="IBrowserFile" FilesChanged="@(async args => registerModel.Photo = await UploadImageAsync(args))" Accept=".png,.jpg,.jpeg">
                 <ActivatorContent>
-                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload">
+                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload">
                         Upload Photo
                     </MudButton>
                 </ActivatorContent>
@@ -31,7 +31,7 @@
         </DialogContent>
         <DialogActions>
             <MudButton OnClick="OnCancel">Cancel</MudButton>
-            <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary">Add</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" Color="MudBlazor.Color.Primary">Add</MudButton>
         </DialogActions>
     </MudDialog>
 </EditForm>

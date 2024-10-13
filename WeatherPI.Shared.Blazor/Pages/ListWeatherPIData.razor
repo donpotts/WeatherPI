@@ -12,15 +12,63 @@
     <MudText Typo="Typo.h3">Weather PI Data</MudText>
 </div>
 
+@if (Data != null && Data.Count > 0)
+{
+    <MudGrid>
+        <MudItem xs="12" sm="6">
+            <ApexChart TItem="WeatherPIData"
+                        Title="Temperature"
+                        Width="700"
+                        Height="700"
+                        Options=options
+                        @ref="chart">
+                <ChildContent>
+                    @foreach (var stationGroup in Data.GroupBy(d => d.StationId))
+                    {
+                        <ApexPointSeries TItem="WeatherPIData"
+                                            Items="stationGroup.ToList()"
+                                            Name="@stationGroup.First().Name"
+                                            SeriesType="SeriesType.Line"
+                                            XValue="d => d.DateTime"
+                                            YValue="d => d.Temperature"
+                                            ShowDataLabels />
+                    }
+                </ChildContent>
+            </ApexChart>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <ApexChart TItem="WeatherPIData"
+                        Title="Humidity"
+                        Width="700"
+                        Height="700"
+                        Options=options2
+                        @ref="chart2">
+                <ChildContent>
+                    @foreach (var stationGroup in Data2.GroupBy(d => d.StationId))
+                    {
+                        <ApexPointSeries TItem="WeatherPIData"
+                                            Items="stationGroup.ToList()"
+                                            Name="@stationGroup.First().Name"
+                                            SeriesType="SeriesType.Line"
+                                            XValue="d => d.DateTime"
+                                            YValue="d => d.RelativeHumidity"
+                                            ShowDataLabels />
+                    }
+                </ChildContent>
+            </ApexChart>
+        </MudItem>
+    </MudGrid>
+}
+
 <MudStack AlignItems="AlignItems.End" Class="mb-3">
-    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Primary" OnClick="@(e => OnAdd())">Add</MudButton>
+    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="MudBlazor.Color.Primary" OnClick="@(e => OnAdd())">Add</MudButton>
 </MudStack>
 
 <MudDataGrid T="WeatherPIData" @ref="grid" ServerData="(new Func<GridState<WeatherPIData>, Task<GridData<WeatherPIData>>>(ServerReload))" Filterable="true">
     <ToolBarContent>
          <MudSpacer />
-         <MudTextField T="string" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Immediate="true" ValueChanged="@(value => SearchChanged(value))"></MudTextField>
-         <MudButton Color="Color.Primary" OnClick="ExportAllToCSV">Export</MudButton>
+         <MudTextField T="string" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="MudBlazor.Size.Medium" Class="mt-0" Immediate="true" ValueChanged="@(value => SearchChanged(value))"></MudTextField>
+         <MudButton Color="MudBlazor.Color.Primary" OnClick="ExportAllToCSV">Export</MudButton>
     </ToolBarContent>
     <Columns>
         @* <PropertyColumn Property="x => x!.Id" Title="Id" /> *@
@@ -36,8 +84,8 @@
         <TemplateColumn Style="width: 50px;" StickyRight="true" Sortable="false" Filterable="false">
             <CellTemplate>
                 <MudStack Row="true">
-                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" title="Edit" OnClick="@(e => OnEdit(context.Item!))" />
-                    <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="@Size.Small" title="Delete" OnClick="@(e => OnDelete(context.Item!))" />
+                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@MudBlazor.Size.Small" title="Edit" OnClick="@(e => OnEdit(context.Item!))" />
+                    <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="@MudBlazor.Size.Small" title="Delete" OnClick="@(e => OnDelete(context.Item!))" />
                 </MudStack>
             </CellTemplate>
         </TemplateColumn>
@@ -69,6 +117,26 @@
 
 @code {
     private MudDataGrid<WeatherPIData>? grid;
+
+    private List<WeatherPIData> Data { get; set; } = new ();
+    private List<WeatherPIData> Data2 { get; set; } = new();
+    // {
+    //     new WeatherPIData { StationId = 15, Name = "Raspberry PI 3b WeatherShield", Temperature = 57, RelativeHumidity = 88, BarometricPressure = 1003, DateTime = new DateTime(2024, 10, 12, 8, 10, 22), Notes = "Outside" },
+    //     new WeatherPIData { StationId = 20, Name = "Raspberry PI 3b SunFounder", Temperature = 70, RelativeHumidity = 36, BarometricPressure = 989, DateTime = new DateTime(2024, 10, 12, 8, 6, 49), Notes = "Spare Bedroom" },
+    //     new WeatherPIData { StationId = 10, Name = "Raspberry PI 3b SenseHat", Temperature = 67, RelativeHumidity = 49, BarometricPressure = 1003, DateTime = new DateTime(2024, 10, 12, 8, 6, 3), Notes = "Garage" },
+    //     new WeatherPIData { StationId = 25, Name = "Raspberry PI 3b Balcony", Temperature = 55, RelativeHumidity = 70, BarometricPressure = 1010, DateTime = new DateTime(2024, 10, 12, 8, 11, 5), Notes = "Balcony" },
+    //     new WeatherPIData { StationId = 30, Name = "Raspberry PI 3b Living Room", Temperature = 72, RelativeHumidity = 45, BarometricPressure = 1002, DateTime = new DateTime(2024, 10, 12, 8, 12, 1), Notes = "Living Room" },
+    //     new WeatherPIData { StationId = 35, Name = "Raspberry PI 3b Basement", Temperature = 60, RelativeHumidity = 52, BarometricPressure = 1001, DateTime = new DateTime(2024, 10, 12, 8, 13, 45), Notes = "Basement" },
+    //     new WeatherPIData { StationId = 15, Name = "Raspberry PI 3b WeatherShield", Temperature = 58, RelativeHumidity = 87, BarometricPressure = 1003, DateTime = new DateTime(2024, 10, 12, 8, 20, 22), Notes = "Outside" },
+    //     new WeatherPIData { StationId = 20, Name = "Raspberry PI 3b SunFounder", Temperature = 71, RelativeHumidity = 35, BarometricPressure = 988, DateTime = new DateTime(2024, 10, 12, 8, 26, 49), Notes = "Spare Bedroom" },
+    //     new WeatherPIData { StationId = 10, Name = "Raspberry PI 3b SenseHat", Temperature = 68, RelativeHumidity = 48, BarometricPressure = 1003, DateTime = new DateTime(2024, 10, 12, 8, 30, 3), Notes = "Garage" }
+    // };
+
+    public ApexChart<WeatherPIData> chart { get; set; } = new();
+    public ApexChart<WeatherPIData> chart2 { get; set; } = new();
+    public ApexChartOptions<WeatherPIData> options { get; set; } = new();
+    public ApexChartOptions<WeatherPIData> options2 { get; set; } = new();
+
     private string? _searchString;
 
     private string GetAbsoluteUri(string uri)
@@ -89,7 +157,7 @@
 
         return absolute.ToString();
     }
-    
+
     private async Task<GridData<WeatherPIData>> ServerReload(GridState<WeatherPIData> state)
     {
         var top = state.PageSize;
@@ -108,7 +176,7 @@
             {
                 bool isDecimal = decimal.TryParse(_searchString, out _);
                 bool isDateTime = DateTime.TryParse(_searchString, out _);
-                
+
                 if (isDecimal)
                 {
                     filter = $"Id eq {_searchString} or StationId eq {_searchString} or Latitude eq cast({_searchString},Edm.Decimal) or Longitude eq cast({_searchString},Edm.Decimal) or Temperature eq cast({_searchString},Edm.Decimal) or RelativeHumidity eq cast({_searchString},Edm.Decimal) or BarometricPressure eq cast({_searchString},Edm.Decimal)";
@@ -124,6 +192,18 @@
             }
 
             result = await AppService.ListWeatherPIDataODataAsync(top, skip, orderby, filter, true, null);
+
+            var itemList = result?.Value;
+
+            Data = itemList.ToList();
+            options = new ApexChartOptions<WeatherPIData>();
+            await chart.UpdateOptionsAsync(true, true, true, null);
+
+            Data2 = itemList.ToList();
+            options2 = new ApexChartOptions<WeatherPIData>();
+            await chart2.UpdateOptionsAsync(true, true, true, null);
+            StateHasChanged();
+
         }
         catch (Exception ex)
         {
@@ -248,4 +328,4 @@
             Snackbar.Add(ex.Message, Severity.Error);
         }
     }
-}
+ }
