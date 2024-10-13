@@ -12,47 +12,76 @@
     <MudText Typo="Typo.h3">Weather PI Data</MudText>
 </div>
 
-@if (Data != null && Data.Count > 0)
+@if (tempData != null && tempData.Count > 0)
 {
     <MudGrid>
         <MudItem xs="12" sm="6">
             <ApexChart TItem="WeatherPIData"
-                        Title="Temperature"
-                        Width="700"
-                        Height="700"
-                        Options=options
-                        @ref="chart">
+                       Title="Temperature"
+                       Height="700"
+                       Options="tempOptions"
+                       @ref="tempChart">
                 <ChildContent>
-                    @foreach (var stationGroup in Data.GroupBy(d => d.StationId))
+                    @foreach (var stationGroup in tempData.GroupBy(d => d.StationId))
                     {
+                        var last12Readings = stationGroup
+                        .OrderByDescending(d => d.DateTime)
+                        .OrderBy(d => d.DateTime)
+                        .Select(d => new WeatherPIData
+                            {
+                                StationId = d.StationId,
+                                Name = d.Name,
+                                Temperature = d.Temperature.HasValue ? Math.Round(d.Temperature.Value, 2) : 0,
+                                RelativeHumidity = d.RelativeHumidity,
+                                BarometricPressure = d.BarometricPressure,
+                                DateTime = d.DateTime,
+                                Notes = d.Notes
+                            })
+                        .ToList();
+
                         <ApexPointSeries TItem="WeatherPIData"
-                                            Items="stationGroup.ToList()"
-                                            Name="@stationGroup.First().Name"
-                                            SeriesType="SeriesType.Line"
-                                            XValue="d => d.DateTime"
-                                            YValue="d => d.Temperature"
-                                            ShowDataLabels />
+                                         Items="last12Readings"
+                                         Name="@stationGroup.First().Name"
+                                         SeriesType="SeriesType.Line"
+                                         XValue="d => d.DateTime.Value.ToLocalTime()"
+                                         YValue="d => d.Temperature.HasValue ? Math.Round(d.Temperature.Value, 2) : 0"
+                                         ShowDataLabels
+                                          />
                     }
                 </ChildContent>
             </ApexChart>
         </MudItem>
         <MudItem xs="12" sm="6">
             <ApexChart TItem="WeatherPIData"
-                        Title="Humidity"
-                        Width="700"
-                        Height="700"
-                        Options=options2
-                        @ref="chart2">
+                       Title="Humidity"
+                       Height="700"
+                       Options="humOptions"
+                       @ref="humChart">
                 <ChildContent>
-                    @foreach (var stationGroup in Data2.GroupBy(d => d.StationId))
+                    @foreach (var stationGroup in humData.GroupBy(d => d.StationId))
                     {
+                        var lastReadings = stationGroup
+                        .OrderByDescending(d => d.DateTime)
+                        .OrderBy(d => d.DateTime)
+                        .Select(d => new WeatherPIData
+                            {
+                                StationId = d.StationId,
+                                Name = d.Name,
+                                Temperature = d.Temperature.HasValue ? Math.Round(d.Temperature.Value, 2) : 0,
+                                RelativeHumidity = d.RelativeHumidity.HasValue ? Math.Round(d.RelativeHumidity.Value, 2) : 0,
+                                BarometricPressure = d.BarometricPressure,
+                                DateTime = d.DateTime,
+                                Notes = d.Notes
+                            })
+                        .ToList();
+
                         <ApexPointSeries TItem="WeatherPIData"
-                                            Items="stationGroup.ToList()"
-                                            Name="@stationGroup.First().Name"
-                                            SeriesType="SeriesType.Line"
-                                            XValue="d => d.DateTime"
-                                            YValue="d => d.RelativeHumidity"
-                                            ShowDataLabels />
+                                         Items="lastReadings"
+                                         Name="@stationGroup.First().Name"
+                                         SeriesType="SeriesType.Line"
+                                         XValue="d => d.DateTime.Value.ToLocalTime()"
+                                         YValue="d => d.RelativeHumidity.HasValue ? Math.Round(d.RelativeHumidity.Value, 2) : 0"
+                                         ShowDataLabels />
                     }
                 </ChildContent>
             </ApexChart>
@@ -64,7 +93,7 @@
     <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="MudBlazor.Color.Primary" OnClick="@(e => OnAdd())">Add</MudButton>
 </MudStack>
 
-<MudDataGrid T="WeatherPIData" @ref="grid" ServerData="(new Func<GridState<WeatherPIData>, Task<GridData<WeatherPIData>>>(ServerReload))" Filterable="true">
+<MudDataGrid T="WeatherPIData" @ref="grid" ServerData="(new Func<GridState<WeatherPIData>, Task<GridData<WeatherPIData>>>(ServerReload))" Filterable="true" RowsPerPage="30">
     <ToolBarContent>
          <MudSpacer />
          <MudTextField T="string" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="MudBlazor.Size.Medium" Class="mt-0" Immediate="true" ValueChanged="@(value => SearchChanged(value))"></MudTextField>
@@ -91,7 +120,7 @@
         </TemplateColumn>
     </Columns>
     <PagerContent>
-        <MudDataGridPager T="WeatherPIData" />
+        <MudDataGridPager T="WeatherPIData" RowsPerPage="30" />
     </PagerContent>
 </MudDataGrid>
 
@@ -118,24 +147,12 @@
 @code {
     private MudDataGrid<WeatherPIData>? grid;
 
-    private List<WeatherPIData> Data { get; set; } = new ();
-    private List<WeatherPIData> Data2 { get; set; } = new();
-    // {
-    //     new WeatherPIData { StationId = 15, Name = "Raspberry PI 3b WeatherShield", Temperature = 57, RelativeHumidity = 88, BarometricPressure = 1003, DateTime = new DateTime(2024, 10, 12, 8, 10, 22), Notes = "Outside" },
-    //     new WeatherPIData { StationId = 20, Name = "Raspberry PI 3b SunFounder", Temperature = 70, RelativeHumidity = 36, BarometricPressure = 989, DateTime = new DateTime(2024, 10, 12, 8, 6, 49), Notes = "Spare Bedroom" },
-    //     new WeatherPIData { StationId = 10, Name = "Raspberry PI 3b SenseHat", Temperature = 67, RelativeHumidity = 49, BarometricPressure = 1003, DateTime = new DateTime(2024, 10, 12, 8, 6, 3), Notes = "Garage" },
-    //     new WeatherPIData { StationId = 25, Name = "Raspberry PI 3b Balcony", Temperature = 55, RelativeHumidity = 70, BarometricPressure = 1010, DateTime = new DateTime(2024, 10, 12, 8, 11, 5), Notes = "Balcony" },
-    //     new WeatherPIData { StationId = 30, Name = "Raspberry PI 3b Living Room", Temperature = 72, RelativeHumidity = 45, BarometricPressure = 1002, DateTime = new DateTime(2024, 10, 12, 8, 12, 1), Notes = "Living Room" },
-    //     new WeatherPIData { StationId = 35, Name = "Raspberry PI 3b Basement", Temperature = 60, RelativeHumidity = 52, BarometricPressure = 1001, DateTime = new DateTime(2024, 10, 12, 8, 13, 45), Notes = "Basement" },
-    //     new WeatherPIData { StationId = 15, Name = "Raspberry PI 3b WeatherShield", Temperature = 58, RelativeHumidity = 87, BarometricPressure = 1003, DateTime = new DateTime(2024, 10, 12, 8, 20, 22), Notes = "Outside" },
-    //     new WeatherPIData { StationId = 20, Name = "Raspberry PI 3b SunFounder", Temperature = 71, RelativeHumidity = 35, BarometricPressure = 988, DateTime = new DateTime(2024, 10, 12, 8, 26, 49), Notes = "Spare Bedroom" },
-    //     new WeatherPIData { StationId = 10, Name = "Raspberry PI 3b SenseHat", Temperature = 68, RelativeHumidity = 48, BarometricPressure = 1003, DateTime = new DateTime(2024, 10, 12, 8, 30, 3), Notes = "Garage" }
-    // };
-
-    public ApexChart<WeatherPIData> chart { get; set; } = new();
-    public ApexChart<WeatherPIData> chart2 { get; set; } = new();
-    public ApexChartOptions<WeatherPIData> options { get; set; } = new();
-    public ApexChartOptions<WeatherPIData> options2 { get; set; } = new();
+    private List<WeatherPIData> tempData { get; set; } = new ();
+    private List<WeatherPIData> humData { get; set; } = new();
+    private ApexChart<WeatherPIData> tempChart { get; set; } = new();
+    private ApexChart<WeatherPIData> humChart { get; set; } = new();
+    private ApexChartOptions<WeatherPIData> tempOptions { get; set; } = new();
+    private ApexChartOptions<WeatherPIData> humOptions { get; set; } = new();
 
     private string? _searchString;
 
@@ -195,13 +212,13 @@
 
             var itemList = result?.Value;
 
-            Data = itemList.ToList();
-            options = new ApexChartOptions<WeatherPIData>();
-            await chart.UpdateOptionsAsync(true, true, true, null);
+            tempData = itemList.ToList();
+            tempOptions = new ApexChartOptions<WeatherPIData>();
+            await tempChart.UpdateOptionsAsync(true, true, true, null);
 
-            Data2 = itemList.ToList();
-            options2 = new ApexChartOptions<WeatherPIData>();
-            await chart2.UpdateOptionsAsync(true, true, true, null);
+            humData = itemList.ToList();
+            humOptions = new ApexChartOptions<WeatherPIData>();
+            await humChart.UpdateOptionsAsync(true, true, true, null);
             StateHasChanged();
 
         }
